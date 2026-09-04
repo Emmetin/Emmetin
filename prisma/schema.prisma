@@ -7,18 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum RestaurantStatus {
-  PENDING // ждёт первичной модерации (в т.ч. проверки адреса)
-  NEEDS_ATTENTION // адрес не подтверждён геокодером / требует ручной проверки
-  APPROVED // опубликовано на карте
-  REJECTED
-}
-
-enum ReviewStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
+// SQLite не поддерживает нативные enum в Prisma, поэтому статусы хранятся как
+// String со значениями "PENDING" | "NEEDS_ATTENTION" | "APPROVED" | "REJECTED"
+// (для Restaurant) и "PENDING" | "APPROVED" | "REJECTED" (для Review).
+// См. константы RestaurantStatus / ReviewStatus в src/lib/status.ts.
 
 model Restaurant {
   id String @id @default(cuid())
@@ -35,7 +27,7 @@ model Restaurant {
   // Точность совпадения от геокодера: exact | number | near | range | street | other | null
   geoPrecision String?
 
-  status         RestaurantStatus @default(PENDING)
+  status         String  @default("PENDING")
   moderationNote String? // причина отправки в "требует внимания" / отклонения
 
   createdAt DateTime @default(now())
@@ -61,7 +53,7 @@ model Review {
   lunchComposition String
   price            Int?
 
-  status         ReviewStatus @default(PENDING)
+  status         String  @default("PENDING")
   moderationNote String?
 
   createdAt DateTime @default(now())

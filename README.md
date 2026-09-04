@@ -50,6 +50,9 @@ Next.js 14 (App Router) + TypeScript + Tailwind CSS + Prisma + SQLite. Янде�
      ```bash
      node -e "console.log(require('bcryptjs').hashSync('ваш-пароль', 10))"
      ```
+     ⚠️ Next.js разворачивает `$переменные` в `.env` (dotenv-expand), а bcrypt-хеш
+     содержит символы `$` — экранируйте их обратным слэшем:
+     `ADMIN_PASSWORD_HASH="\$2a\$10\$..."`, иначе значение обрежется и логин не сработает.
    - `SESSION_SECRET` — любая длинная случайная строка для подписи сессионной cookie.
 
 3. Создайте базу данных и примените схему:
