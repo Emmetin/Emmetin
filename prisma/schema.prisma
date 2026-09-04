@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum RestaurantStatus {
+  PENDING // ждёт первичной модерации (в т.ч. проверки адреса)
+  NEEDS_ATTENTION // адрес не подтверждён геокодером / требует ручной проверки
+  APPROVED // опубликовано на карте
+  REJECTED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Restaurant {
+  id String @id @default(cuid())
+
+  name String
+
+  // Адрес, введённый пользователем
+  addressInput String
+  // Адрес, нормализованный Яндекс.Геокодером (если удалось распознать)
+  addressResolved String?
+  // Координаты для карты (null, пока адрес не подтверждён)
+  lat Float?
+  lng Float?
+  // Точность совпадения от геокодера: exact | number | near | range | street | other | null
+  geoPrecision String?
+
+  status         RestaurantStatus @default(PENDING)
+  moderationNote String? // причина отправки в "требует внимания" / отклонения
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviews Review[]
+
+  @@index([status])
+}
+
+model Review {
+  id String @id @default(cuid())
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId String
+
+  authorName String
+  rating     Int // 1..5
+
+  text String
+
+  // Состав бизнес-ланча, актуальный на момент отзыва
+  lunchComposition String
+  price            Int?
+
+  status         ReviewStatus @default(PENDING)
+  moderationNote String?
+
+  createdAt DateTime @default(now())
+
+  @@index([restaurantId, status])
+  @@index([status, createdAt])
+}
