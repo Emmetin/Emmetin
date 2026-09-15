@@ -100,8 +100,8 @@ export default function AdminDashboard({
     else setPendingRestaurants((l) => l.filter((r) => r.id !== id));
   }
 
-  async function updateAddress(id: string) {
-    const address = addressDrafts[id];
+  async function updateAddress(id: string, fallbackAddress: string) {
+    const address = addressDrafts[id] ?? fallbackAddress;
     if (!address || address.trim().length < 5) {
       setErrorMsg("Введите корректный адрес");
       return;
@@ -190,7 +190,7 @@ export default function AdminDashboard({
                 />
                 <button
                   disabled={busyId === r.id}
-                  onClick={() => updateAddress(r.id)}
+                  onClick={() => updateAddress(r.id, r.addressInput)}
                   className="rounded-lg bg-neutral-900 px-3 py-2 text-sm text-white hover:bg-neutral-700 disabled:opacity-50"
                 >
                   Проверить адрес
