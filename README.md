@@ -23,8 +23,12 @@
 
 ## Стек
 
-Next.js 14 (App Router) + TypeScript + Tailwind CSS + Prisma + SQLite. Яндекс.Карты
+Next.js 14 (App Router) + TypeScript + Tailwind CSS + Prisma + Postgres. Яндекс.Карты
 (JS API 2.1) на клиенте, Яндекс.Геокодер (HTTP API) на сервере.
+
+> БД — Postgres (а не SQLite), потому что на Vercel serverless-функции не имеют
+> постоянного диска: файл SQLite не переживёт даже один холодный старт. Подойдёт
+> любой Postgres — Neon, Vercel Postgres (тоже на Neon), Supabase, ваш собственный сервер.
 
 ## Запуск локально
 
@@ -40,6 +44,9 @@ Next.js 14 (App Router) + TypeScript + Tailwind CSS + Prisma + SQLite. Янде�
    cp .env.example .env
    ```
 
+   - `DATABASE_URL` — строка подключения к Postgres. Для локальной разработки проще
+     всего использовать ту же облачную БД, что и в проде (Neon/Vercel Postgres — бесплатного
+     тарифа достаточно), либо поднять Postgres локально.
    - `NEXT_PUBLIC_YANDEX_MAPS_API_KEY` — ключ JS API Яндекс.Карт (без него карта на главной
      покажет заглушку с инструкцией).
    - `YANDEX_GEOCODER_API_KEY` — ключ HTTP Геокодера Яндекс (без него адреса не проверяются
@@ -55,10 +62,12 @@ Next.js 14 (App Router) + TypeScript + Tailwind CSS + Prisma + SQLite. Янде�
      `ADMIN_PASSWORD_HASH="\$2a\$10\$..."`, иначе значение обрежется и логин не сработает.
    - `SESSION_SECRET` — любая длинная случайная строка для подписи сессионной cookie.
 
-3. Создайте базу данных и примените схему:
+3. Примените схему к базе данных (создаёт таблицы; миграций как таковых нет —
+   `prisma db push` синхронизирует схему напрямую, это же происходит автоматически
+   при каждой сборке на Vercel, см. `package.json`):
 
    ```bash
-   npx prisma migrate dev --name init
+   npx prisma db push
    ```
 
 4. (Опционально) заполните базу демо-данными:
@@ -74,6 +83,27 @@ Next.js 14 (App Router) + TypeScript + Tailwind CSS + Prisma + SQLite. Янде�
    ```
 
    Сайт будет доступен на http://localhost:3000, админка — на http://localhost:3000/admin.
+
+## Деплой на Vercel
+
+1. **Создайте Postgres-базу.** Проще всего — прямо в проекте на Vercel: вкладка
+   **Storage → Create Database → Postgres** (это Neon под капотом). Vercel сам подставит
+   переменную подключения в проект.
+2. **Импортируйте репозиторий** на [vercel.com/new](https://vercel.com/new) — выберите
+   GitHub-репозиторий и ветку с этим кодом. Next.js определится автоматически.
+3. **Задайте переменные окружения** проекта (Project → Settings → Environment Variables):
+   `DATABASE_URL` (если Storage не подставил её сам — под именем `POSTGRES_URL` или
+   `DATABASE_URL`, переименуйте под `DATABASE_URL`, если нужно), `NEXT_PUBLIC_YANDEX_MAPS_API_KEY`,
+   `YANDEX_GEOCODER_API_KEY`, `ADMIN_LOGIN`, `ADMIN_PASSWORD_HASH`, `SESSION_SECRET`.
+   Для `ADMIN_PASSWORD_HASH` в веб-интерфейсе Vercel экранировать `$` не нужно (это не shell) —
+   вставляйте хеш как есть, например `$2a$10$...`.
+4. **Deploy.** Команда сборки (`prisma generate && prisma db push && next build`) сама создаст
+   таблицы в свежей базе при первом деплое.
+5. (Опционально) наполните базу демо-данными с вашей машины:
+   ```bash
+   vercel env pull .env.production.local
+   DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d= -f2- | tr -d '"') npm run seed
+   ```
 
 ## Структура данных
 

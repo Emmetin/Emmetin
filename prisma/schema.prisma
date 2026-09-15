@@ -1,16 +1,17 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// SQLite не поддерживает нативные enum в Prisma, поэтому статусы хранятся как
-// String со значениями "PENDING" | "NEEDS_ATTENTION" | "APPROVED" | "REJECTED"
-// (для Restaurant) и "PENDING" | "APPROVED" | "REJECTED" (для Review).
-// См. константы RestaurantStatus / ReviewStatus в src/lib/status.ts.
+// Статусы хранятся как String со значениями
+// "PENDING" | "NEEDS_ATTENTION" | "APPROVED" | "REJECTED" (для Restaurant) и
+// "PENDING" | "APPROVED" | "REJECTED" (для Review) — см. константы
+// RestaurantStatus / ReviewStatus в src/lib/status.ts.
 
 model Restaurant {
   id String @id @default(cuid())
