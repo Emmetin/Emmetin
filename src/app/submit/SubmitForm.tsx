@@ -136,11 +136,17 @@ export default function SubmitForm() {
     if (submitting) return false;
     if (!authorName.trim() || !text.trim() || !lunchComposition.trim()) return false;
     if (isExistingMode) return Boolean(existingRestaurant);
-    return restaurantName.trim().length >= 2 && address.trim().length >= 5;
-  }, [submitting, authorName, text, lunchComposition, isExistingMode, existingRestaurant, restaurantName, address]);
+    return restaurantName.trim().length >= 2 && Boolean(addressConfirmed);
+  }, [submitting, authorName, text, lunchComposition, isExistingMode, existingRestaurant, restaurantName, addressConfirmed]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!isExistingMode && !addressConfirmed) {
+      setErrors({ address: "Выберите адрес из списка подсказок — вручную введённый текст не принимается" });
+      return;
+    }
+
     setSubmitting(true);
     setErrors({});
     setGlobalError(null);
@@ -255,9 +261,14 @@ export default function SubmitForm() {
               placeholder="Москва, улица, дом"
             />
             {errors.address && <p className="mt-1 text-xs text-red-600">{errors.address}</p>}
-            {geocoderConfigured === false && (
+            {!addressConfirmed && !errors.address && (
               <p className="mt-1 text-xs text-neutral-400">
-                Автоподбор адреса по карте не настроен — адрес проверит администратор вручную.
+                Начните вводить адрес и выберите точный вариант из списка — вручную ввести адрес без выбора нельзя.
+              </p>
+            )}
+            {geocoderConfigured === false && (
+              <p className="mt-1 text-xs text-amber-600">
+                Подбор адреса сейчас недоступен — добавление новых заведений временно не работает. Попробуйте позже.
               </p>
             )}
             {addressConfirmed && (
