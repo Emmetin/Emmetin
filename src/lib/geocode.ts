@@ -83,7 +83,7 @@ export async function geocodeAddress(
     return [];
   }
 
-  const url = new URL("https://geocode-maps.yandex.ru/1.x/");
+  const url = new URL("https://geocode-maps.yandex.ru/v1/");
   url.searchParams.set("apikey", apiKey);
   url.searchParams.set("format", "json");
   url.searchParams.set("geocode", query);
@@ -97,6 +97,8 @@ export async function geocodeAddress(
   });
 
   if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    console.error(`Yandex Geocoder ${res.status} ${res.statusText}: ${body.slice(0, 500)}`);
     return [];
   }
 
