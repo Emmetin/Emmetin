@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import PhotoStrip from "@/components/PhotoStrip";
 
 interface ReviewLite {
   id: string;
@@ -10,6 +11,8 @@ interface ReviewLite {
   text: string;
   lunchComposition: string;
   price: number | null;
+  menuPhotos: string[];
+  photos: string[];
   createdAt: string;
 }
 
@@ -179,6 +182,8 @@ export default function AdminDashboard({
                   </div>
                   <div>{r.reviews[0].text}</div>
                   <div className="mt-1 text-neutral-500">Ланч: {r.reviews[0].lunchComposition}</div>
+                  <PhotoStrip label="Меню ланча" urls={r.reviews[0].menuPhotos} />
+                  <PhotoStrip label="Фото" urls={r.reviews[0].photos} />
                 </div>
               )}
               <div className="flex flex-wrap items-center gap-2">
@@ -227,6 +232,8 @@ export default function AdminDashboard({
                   </div>
                   <div>{r.reviews[0].text}</div>
                   <div className="mt-1 text-neutral-500">Ланч: {r.reviews[0].lunchComposition}</div>
+                  <PhotoStrip label="Меню ланча" urls={r.reviews[0].menuPhotos} />
+                  <PhotoStrip label="Фото" urls={r.reviews[0].photos} />
                 </div>
               )}
               <div className="flex gap-2">
@@ -268,6 +275,8 @@ export default function AdminDashboard({
                 </div>
                 <div>{rv.text}</div>
                 <div className="mt-1 text-neutral-500">Ланч: {rv.lunchComposition}</div>
+                <PhotoStrip label="Меню ланча" urls={rv.menuPhotos} />
+                <PhotoStrip label="Фото" urls={rv.photos} />
               </div>
               <div className="flex gap-2">
                 <button

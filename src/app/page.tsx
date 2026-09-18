@@ -49,6 +49,8 @@ async function getRecentReviews() {
       text: true,
       lunchComposition: true,
       price: true,
+      menuPhotos: true,
+      photos: true,
       createdAt: true,
       restaurant: { select: { id: true, name: true, addressResolved: true, addressInput: true } },
     },
@@ -61,6 +63,8 @@ async function getRecentReviews() {
     text: r.text,
     lunchComposition: r.lunchComposition,
     price: r.price,
+    menuPhotos: r.menuPhotos,
+    photos: r.photos,
     createdAt: r.createdAt.toISOString(),
     restaurant: {
       id: r.restaurant.id,

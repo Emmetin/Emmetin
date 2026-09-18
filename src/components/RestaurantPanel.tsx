@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import StarRating from "./StarRating";
+import PhotoStrip from "./PhotoStrip";
 
 interface ReviewItem {
   id: string;
@@ -11,6 +12,8 @@ interface ReviewItem {
   text: string;
   lunchComposition: string;
   price: number | null;
+  menuPhotos: string[];
+  photos: string[];
   createdAt: string;
 }
 
@@ -134,6 +137,8 @@ export default function RestaurantPanel({
                   <p className="mt-1 text-xs text-neutral-400">
                     {new Date(r.createdAt).toLocaleDateString("ru-RU")}
                   </p>
+                  <PhotoStrip label="Меню ланча" urls={r.menuPhotos} />
+                  <PhotoStrip label="Фото" urls={r.photos} />
                 </div>
               ))}
             </div>

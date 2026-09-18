@@ -26,6 +26,8 @@ export async function GET(
           text: true,
           lunchComposition: true,
           price: true,
+          menuPhotos: true,
+          photos: true,
           createdAt: true,
         },
       },

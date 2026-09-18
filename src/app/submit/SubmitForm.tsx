@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import PhotoUploader from "@/components/PhotoUploader";
+import { MAX_MENU_PHOTOS, MAX_PHOTOS } from "@/lib/uploadLimits";
 
 interface AddressSuggestion {
   address: string;
@@ -59,6 +61,8 @@ export default function SubmitForm() {
   const [text, setText] = useState("");
   const [lunchComposition, setLunchComposition] = useState("");
   const [price, setPrice] = useState("");
+  const [menuPhotos, setMenuPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<string[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -157,6 +161,8 @@ export default function SubmitForm() {
       text,
       lunchComposition,
       price: price === "" ? null : Number(price),
+      menuPhotos,
+      photos,
     };
 
     if (isExistingMode && existingRestaurant) {
@@ -348,6 +354,24 @@ export default function SubmitForm() {
         />
         {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
       </div>
+
+      <PhotoUploader
+        label="Меню ланча"
+        max={MAX_MENU_PHOTOS}
+        urls={menuPhotos}
+        onChange={setMenuPhotos}
+        disabled={submitting}
+      />
+      {errors.menuPhotos && <p className="-mt-3 text-xs text-red-600">{errors.menuPhotos}</p>}
+
+      <PhotoUploader
+        label="Фото"
+        max={MAX_PHOTOS}
+        urls={photos}
+        onChange={setPhotos}
+        disabled={submitting}
+      />
+      {errors.photos && <p className="-mt-3 text-xs text-red-600">{errors.photos}</p>}
 
       {globalError && <p className="text-sm text-red-600">{globalError}</p>}
 

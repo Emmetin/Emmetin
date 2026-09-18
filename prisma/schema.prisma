@@ -54,6 +54,11 @@ model Review {
   lunchComposition String
   price            Int?
 
+  // Фото меню ланча (до 3 штук) и общие фото заведения/блюд (до 5 штук).
+  // Хранятся как URL в Vercel Blob — см. src/lib/uploadLimits.ts.
+  menuPhotos String[] @default([])
+  photos     String[] @default([])
+
   status         String  @default("PENDING")
   moderationNote String?
 

@@ -13,6 +13,12 @@ export async function POST(req: Request) {
 
   const price =
     body.price === "" || body.price == null ? null : Number(body.price);
+  const menuPhotos = Array.isArray(body.menuPhotos)
+    ? body.menuPhotos.filter((p: unknown) => typeof p === "string")
+    : [];
+  const photos = Array.isArray(body.photos)
+    ? body.photos.filter((p: unknown) => typeof p === "string")
+    : [];
 
   // Сценарий 1: отзыв на уже существующее (одобренное) заведение.
   if (body.restaurantId) {
@@ -23,6 +29,8 @@ export async function POST(req: Request) {
       text: body.text,
       lunchComposition: body.lunchComposition,
       price,
+      menuPhotos,
+      photos,
     });
     if (errors.length > 0) {
       return NextResponse.json({ errors }, { status: 422 });
@@ -46,6 +54,8 @@ export async function POST(req: Request) {
         text: String(body.text).trim(),
         lunchComposition: String(body.lunchComposition).trim(),
         price,
+        menuPhotos,
+        photos,
         status: "PENDING",
       },
     });
@@ -62,6 +72,8 @@ export async function POST(req: Request) {
     text: body.text,
     lunchComposition: body.lunchComposition,
     price,
+    menuPhotos,
+    photos,
   });
   if (errors.length > 0) {
     return NextResponse.json({ errors }, { status: 422 });
@@ -96,6 +108,8 @@ export async function POST(req: Request) {
           text: String(body.text).trim(),
           lunchComposition: String(body.lunchComposition).trim(),
           price,
+          menuPhotos,
+          photos,
           status: "PENDING",
         },
       },

@@ -1,4 +1,5 @@
 import StarRating from "./StarRating";
+import PhotoStrip from "./PhotoStrip";
 
 export interface FeedReview {
   id: string;
@@ -7,6 +8,8 @@ export interface FeedReview {
   text: string;
   lunchComposition: string;
   price: number | null;
+  menuPhotos: string[];
+  photos: string[];
   createdAt: string;
   restaurant: { id: string; name: string; address: string };
 }
@@ -37,6 +40,8 @@ export default function ReviewFeed({ reviews }: { reviews: FeedReview[] }) {
           <p className="mt-2 text-xs text-neutral-400">
             {r.authorName} · {new Date(r.createdAt).toLocaleDateString("ru-RU")}
           </p>
+          <PhotoStrip label="Меню ланча" urls={r.menuPhotos} />
+          <PhotoStrip label="Фото" urls={r.photos} />
         </div>
       ))}
     </div>

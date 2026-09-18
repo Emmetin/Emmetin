@@ -17,6 +17,8 @@ export async function GET(req: Request) {
       text: true,
       lunchComposition: true,
       price: true,
+      menuPhotos: true,
+      photos: true,
       createdAt: true,
       restaurant: { select: { id: true, name: true, addressResolved: true, addressInput: true } },
     },
@@ -30,6 +32,8 @@ export async function GET(req: Request) {
       text: r.text,
       lunchComposition: r.lunchComposition,
       price: r.price,
+      menuPhotos: r.menuPhotos,
+      photos: r.photos,
       createdAt: r.createdAt,
       restaurant: {
         id: r.restaurant.id,
